@@ -5,6 +5,7 @@ import { gql, useQuery } from "@apollo/client";
 const NOTES_QUERY = gql`
   query GetAllNotes {
     notes {
+      id
       content
       category {
         label
@@ -22,9 +23,9 @@ export function NoteList() {
   // ];
   return (
     <Stack spacing={4}>
-      {notes?.map((note, index) => (
+      {notes?.map((note) => (
         <UiNote
-          key={index}
+          key={note.id}
           content={note.content}
           category={note.category.label}
         >
