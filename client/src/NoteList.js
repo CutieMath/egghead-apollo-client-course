@@ -1,6 +1,17 @@
 import { Stack } from "@chakra-ui/react";
 import { UiNote } from "./shared-ui";
 
+const NOTES_QUERY = `
+  query GetAllNotes {
+    notes {
+      content
+      category {
+        label
+      }
+    }
+  } 
+`;
+
 export function NoteList() {
   const notes = [
     { content: "Note 1", category: { label: "Work" } },
