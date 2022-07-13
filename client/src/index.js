@@ -8,7 +8,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 // point to the server
 const client = new ApolloClient({
   uri: "http://localhost:4000/graphql",
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache(), // used local cache
 });
 
 ReactDOM.render(
