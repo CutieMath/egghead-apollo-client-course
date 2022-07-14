@@ -19,6 +19,8 @@ export function NoteList({ category }) {
     variables: {
       categoryId: category,
     },
+    // use no cache policy for certain queries that are constantly changing
+    fetchPolicy: "cache-and-network",
   }); // deconstruct the data from the result
   const notes = data?.notes;
   // const notes = [
