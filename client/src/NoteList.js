@@ -15,18 +15,22 @@ const NOTES_QUERY = gql`
 `;
 
 export function NoteList({ category }) {
-  const { data, loading } = useQuery(NOTES_QUERY, {
+  const { data, loading, error } = useQuery(NOTES_QUERY, {
     variables: {
       categoryId: category,
     },
     // use no cache policy for certain queries that are constantly changing
     fetchPolicy: "cache-and-network",
+    errorPolicy: "all", // leave the data alone
   }); // deconstruct the data from the result
   const notes = data?.notes;
   // const notes = [
   //   { content: "Note 1", category: { label: "Work" } },
   //   { content: "Note 2", category: { label: "Work" } },
   // ];
+  if (error && !data) {
+    return <d1>No data to show.</d1>;
+  }
   if (loading) {
     return <Spinner />;
   }
