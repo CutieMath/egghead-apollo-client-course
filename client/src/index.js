@@ -17,6 +17,7 @@ const httpLink = new HttpLink({
 });
 
 const retryLink = new RetryLink({
+  // by default retry for 5 times
   delay: {
     initial: 2000,
     max: 2000, // max wait time
