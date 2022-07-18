@@ -1,7 +1,8 @@
 import { gql, useQuery } from "@apollo/client";
 import { useParams } from "react-router-dom";
+import { UiEditNote } from "./shared-ui";
 
-const GET_NOT = gql`
+const GET_NOTE = gql`
   query GetNote($id: String!) {
     note(id: $id) {
       id
@@ -13,5 +14,11 @@ const GET_NOT = gql`
 export function EditNote() {
   let { noteId } = useParams();
 
-  return <div>Note {noteId} was selected</div>;
+  const { data } = useQuery(GET_NOTE, {
+    variables: {
+      id: noteId,
+    },
+  });
+
+  return <UiEditNote note={data?.note} />;
 }
