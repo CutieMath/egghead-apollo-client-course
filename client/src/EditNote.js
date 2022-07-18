@@ -21,7 +21,7 @@ export function EditNote() {
   });
 
   // Edit the data
-  const [updateNote] = useMutation(gql`
+  const [updateNote, { loading }] = useMutation(gql`
     mutation UpdateNote($id: String!, $content: String!) {
       updateNote(id: $id, content: $content) {
         successful
@@ -31,6 +31,7 @@ export function EditNote() {
 
   return (
     <UiEditNote
+      isSaving={loading}
       onSave={(newContent) => {
         updateNote({
           variables: {
