@@ -1,6 +1,7 @@
 import { Spinner, Stack } from "@chakra-ui/react";
-import { UiNote } from "./shared-ui";
+import { UiNote, ViewNoteButton } from "./shared-ui";
 import { gql, useQuery } from "@apollo/client";
+import { Link } from "react-router-dom";
 
 const NOTES_QUERY = gql`
   query GetAllNotes($categoryId: String) {
@@ -23,7 +24,7 @@ export function NoteList({ category }) {
     fetchPolicy: "cache-and-network",
     errorPolicy: "all", // leave the data alone
   }); // deconstruct the data from the result
-  const notes = data?.notes;
+  const notes = data?.notes.filter((note) => !!note);
   // const notes = [
   //   { content: "Note 1", category: { label: "Work" } },
   //   { content: "Note 2", category: { label: "Work" } },
@@ -42,7 +43,9 @@ export function NoteList({ category }) {
           content={note.content}
           category={note.category.label}
         >
-          {note.content}
+          <Link to={`/note/${note.id}`}>
+            <ViewNoteButton />
+          </Link>
         </UiNote>
       ))}
     </Stack>

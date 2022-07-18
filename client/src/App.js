@@ -3,6 +3,8 @@ import { Stack } from "@chakra-ui/react";
 import { NoteList } from "./NoteList";
 import { SelectCategory } from "./SelectCategory";
 import { useState } from "react";
+import { EditNote } from "./EditNote";
+import { Route } from "react-router-dom";
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState("1");
@@ -15,6 +17,9 @@ function App() {
         />
         <NoteList category={selectedCategory} />
       </Stack>
+      <Route path={`/note/:noteId`}>
+        <EditNote />
+      </Route>
     </UiAppLayout>
   );
 }
