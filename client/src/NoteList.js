@@ -34,7 +34,8 @@ export function NoteList({ category }) {
           successful
         }
       }
-    `
+    `,
+    { refetchQueries: ["GetAllNotes"] }
   );
 
   if (error && !data) {
@@ -57,7 +58,10 @@ export function NoteList({ category }) {
             <ViewNoteButton />
           </Link>
           <DeleteButton
-            onClick={() => deleteNote({ variables: { noteId: note.id } })}
+            onClick={
+              () => deleteNote({ variables: { noteId: note.id } })
+              // console.log(`delete clicked note ${note.id}`)
+            }
           />
         </UiNote>
       ))}
