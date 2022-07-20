@@ -1,6 +1,6 @@
-import { Spinner, Stack } from "@chakra-ui/react";
-import { UiNote, ViewNoteButton } from "./shared-ui";
-import { gql, useQuery } from "@apollo/client";
+import { Spinner, Stack, Heading } from "@chakra-ui/react";
+import { DeleteButton, UiNote, ViewNoteButton } from "./shared-ui";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import { Link } from "react-router-dom";
 
 const NOTES_QUERY = gql`
@@ -25,17 +25,26 @@ export function NoteList({ category }) {
     fetchPolicy: "cache-and-network",
     errorPolicy: "all", // leave the data alone
   }); // deconstruct the data from the result
-  const notes = data?.notes.filter((note) => !!note);
-  // const notes = [
-  //   { content: "Note 1", category: { label: "Work" } },
-  //   { content: "Note 2", category: { label: "Work" } },
-  // ];
+
+  // Delete function
+  const [deleteNote] = useMutation(
+    gql`
+      mutation DeleteNote($noteId: String!) {
+        deleteNote(id: $noteId) {
+          successful
+        }
+      }
+    `
+  );
+
   if (error && !data) {
-    return <d1>No data to show.</d1>;
+    return <Heading>Could not load notes.</Heading>;
   }
   if (loading) {
     return <Spinner />;
   }
+  const notes = data?.notes.filter((note) => !!note);
+
   return (
     <Stack spacing={4}>
       {notes?.map((note) => (
@@ -47,6 +56,9 @@ export function NoteList({ category }) {
           <Link to={`/note/${note.id}`}>
             <ViewNoteButton />
           </Link>
+          <DeleteButton
+            onClick={() => deleteNote({ variables: { noteId: note.id } })}
+          />
         </UiNote>
       ))}
     </Stack>
