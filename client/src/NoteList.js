@@ -9,6 +9,7 @@ const NOTES_QUERY = gql`
       id
       content
       category {
+        id
         label
       }
     }
