@@ -32,10 +32,31 @@ export function NoteList({ category }) {
       mutation DeleteNote($noteId: String!) {
         deleteNote(id: $noteId) {
           successful
+          note {
+            id
+          }
         }
       }
     `,
-    { refetchQueries: ["GetAllNotes"] }
+    {
+      // { refetchQueries: ["GetAllNotes"] }
+      // use update to remove the second refetch network call
+      update: (cache, mutationResult) => {
+        const deletedNoteId = cache.identify(
+          mutationResult.data?.deleteNote.note
+        );
+        cache.modify({
+          fields: {
+            notes: (existingNotes) => {
+              return existingNotes.filter((noteRef) => {
+                return cache.identify(noteRef) !== deletedNoteId;
+              });
+            },
+          },
+        });
+        console.log({ mutationResult });
+      },
+    }
   );
 
   if (error && !data) {
