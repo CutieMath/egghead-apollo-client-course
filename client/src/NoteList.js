@@ -55,6 +55,7 @@ export function NoteList({ category }) {
         const deletedNoteId = cache.identify(
           mutationResult.data?.deleteNote.note
         );
+        console.log({ mutationResult, deletedNoteId });
         cache.modify({
           fields: {
             notes: (existingNotes) => {
@@ -64,7 +65,6 @@ export function NoteList({ category }) {
             },
           },
         });
-        console.log({ mutationResult });
       },
     }
   );
