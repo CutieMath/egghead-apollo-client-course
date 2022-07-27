@@ -39,8 +39,18 @@ export function NoteList({ category }) {
       }
     `,
     {
-      // { refetchQueries: ["GetAllNotes"] }
-      // use update to remove the second refetch network call
+      optimisticResponse: (vars) => {
+        return {
+          deleteNote: {
+            successful: true,
+            __typename: "DeleteNoteResponse",
+            note: {
+              id: vars.noteId,
+              __typename: "Note",
+            },
+          },
+        };
+      },
       update: (cache, mutationResult) => {
         const deletedNoteId = cache.identify(
           mutationResult.data?.deleteNote.note
