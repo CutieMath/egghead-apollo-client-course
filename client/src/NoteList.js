@@ -89,9 +89,10 @@ export function NoteList({ category }) {
             <ViewNoteButton />
           </Link>
           <DeleteButton
-            onClick={
-              () => deleteNote({ variables: { noteId: note.id } })
-              // console.log(`delete clicked note ${note.id}`)
+            onClick={() =>
+              deleteNote({ variables: { noteId: note.id } }).catch((e) =>
+                console.error(e)
+              )
             }
           />
         </UiNote>
