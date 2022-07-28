@@ -65,6 +65,8 @@ export function NoteList({ category }) {
             },
           },
         });
+        // Evict the record from the cache completely
+        cache.evict({ id: deletedNoteId });
       },
     }
   );

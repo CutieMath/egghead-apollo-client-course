@@ -7,6 +7,7 @@ function UiEditNote({ note, onSave, isSaving, isNoteSelected }) {
     const newContent = e.target.elements.noteContents.value;
     onSave(newContent);
   }
+  // This part is essential to handle deleted note
   if (!note) {
     return <UiNotFound />;
   }
