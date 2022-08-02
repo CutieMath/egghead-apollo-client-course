@@ -27,7 +27,20 @@ const retryLink = new RetryLink({
 
 // point to the server
 const client = new ApolloClient({
-  cache: new InMemoryCache(), // used local cache
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          notes: {
+            keyArgs: ["categoryId"],
+            merge: (existingNotes = [], incomingNotes) => {
+              return [...existingNotes, ...incomingNotes];
+            },
+          },
+        },
+      },
+    },
+  }),
   link: from([retryLink, httpLink]),
 });
 

@@ -1,5 +1,10 @@
 import { Spinner, Stack, Heading } from "@chakra-ui/react";
-import { DeleteButton, UiNote, ViewNoteButton } from "./shared-ui";
+import {
+  DeleteButton,
+  UiLoadMoreButton,
+  UiNote,
+  ViewNoteButton,
+} from "./shared-ui";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { Link } from "react-router-dom";
 
@@ -17,7 +22,7 @@ const NOTES_QUERY = gql`
 `;
 
 export function NoteList({ category }) {
-  const { data, loading, error } = useQuery(NOTES_QUERY, {
+  const { data, loading, error, fetchMore } = useQuery(NOTES_QUERY, {
     variables: {
       categoryId: category,
       offset: 0, // give notes from the beginning
@@ -101,6 +106,15 @@ export function NoteList({ category }) {
           />
         </UiNote>
       ))}
+      <UiLoadMoreButton
+        onClick={() =>
+          fetchMore({
+            variables: {
+              offset: data.notes.length,
+            },
+          })
+        }
+      />
     </Stack>
   );
 }
