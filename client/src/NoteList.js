@@ -4,8 +4,8 @@ import { gql, useQuery, useMutation } from "@apollo/client";
 import { Link } from "react-router-dom";
 
 const NOTES_QUERY = gql`
-  query GetAllNotes($categoryId: String) {
-    notes(categoryId: $categoryId) {
+  query GetAllNotes($categoryId: String, $offset: Int, $limit: Int) {
+    notes(categoryId: $categoryId, offset: $offset, limit: $limit) {
       id
       content
       category {
@@ -20,6 +20,8 @@ export function NoteList({ category }) {
   const { data, loading, error } = useQuery(NOTES_QUERY, {
     variables: {
       categoryId: category,
+      offset: 0, // give notes from the beginning
+      limit: 3,
     },
     // use no cache policy for certain queries that are constantly changing
     fetchPolicy: "cache-and-network",
