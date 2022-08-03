@@ -29,18 +29,31 @@ const retryLink = new RetryLink({
 const client = new ApolloClient({
   cache: new InMemoryCache({
     typePolicies: {
-      Query: {
+      Note: {
         fields: {
-          notes: {
-            keyArgs: ["categoryId"],
-            merge: (existingNotes = [], incomingNotes) => {
-              return [...existingNotes, ...incomingNotes];
+          isSelected: {
+            read: () => {
+              return true;
             },
           },
         },
       },
     },
   }),
+  //   {
+  //   typePolicies: {
+  //     Query: {
+  //       fields: {
+  //         notes: {
+  //           keyArgs: ["categoryId"],
+  //           merge: (existingNotes = [], incomingNotes) => {
+  //             return [...existingNotes, ...incomingNotes];
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // }
   link: from([retryLink, httpLink]),
 });
 

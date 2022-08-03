@@ -1,4 +1,4 @@
-import { Spinner, Stack, Heading } from "@chakra-ui/react";
+import { Spinner, Stack, Heading, Checkbox } from "@chakra-ui/react";
 import {
   DeleteButton,
   UiLoadMoreButton,
@@ -13,6 +13,7 @@ const NOTES_QUERY = gql`
     notes(categoryId: $categoryId, offset: $offset, limit: $limit) {
       id
       content
+      isSelected @client
       category {
         id
         label
@@ -94,6 +95,14 @@ export function NoteList({ category }) {
           content={note.content}
           category={note.category.label}
         >
+          <Checkbox
+            onChange={(e) =>
+              console.log(`Note ${note.id} is selected: `, e.target.checked)
+            }
+            isChecked={note.isSelected}
+          >
+            Select
+          </Checkbox>
           <Link to={`/note/${note.id}`}>
             <ViewNoteButton />
           </Link>
