@@ -13,18 +13,14 @@ import {
 } from "@apollo/client";
 import { RetryLink } from "@apollo/client/link/retry";
 
-// initialise makeVar
+
 let selectedNoteIds = makeVar(["2"]);
 export function setNoteSelection(noteId, isSelected) {
-  console.log("before", selectedNoteIds);
-  if (isSelected) {
-    selectedNoteIds = ([...selectedNoteIds(), noteId]);
+  if(isSelected) {
+    selectedNoteIds([...selectedNoteIds(), noteId]);
   } else {
-    selectedNoteIds(selectedNoteIds().filter(
-      (selectedNoteId) => selectedNoteId !== noteId
-    ));
+    selectedNoteIds(selectedNoteIds().filter(selectedNoteId => selectedNoteId !== noteId));
   }
-  console.log("after", selectedNoteIds);
 }
 
 const httpLink = new HttpLink({
