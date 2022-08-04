@@ -9,8 +9,23 @@ import {
   ApolloProvider,
   HttpLink,
   from,
+  makeVar,
 } from "@apollo/client";
 import { RetryLink } from "@apollo/client/link/retry";
+
+// initialise makeVar
+let selectedNoteIds = makeVar(["2"]);
+export function setNoteSelection(noteId, isSelected) {
+  console.log("before", selectedNoteIds);
+  if (isSelected) {
+    selectedNoteIds = ([...selectedNoteIds(), noteId]);
+  } else {
+    selectedNoteIds(selectedNoteIds().filter(
+      (selectedNoteId) => selectedNoteId !== noteId
+    ));
+  }
+  console.log("after", selectedNoteIds);
+}
 
 const httpLink = new HttpLink({
   uri: "http://localhost:4000/graphql",
@@ -32,8 +47,9 @@ const client = new ApolloClient({
       Note: {
         fields: {
           isSelected: {
-            read: () => {
-              return true;
+            read: (currentIsSelectedValue, helpers) => {
+              const currentNoteId = helpers.readField("id");
+              return selectedNoteIds().includes(currentNoteId);
             },
           },
         },
