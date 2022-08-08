@@ -13,13 +13,14 @@ import {
 } from "@apollo/client";
 import { RetryLink } from "@apollo/client/link/retry";
 
-
 let selectedNoteIds = makeVar(["2"]);
 export function setNoteSelection(noteId, isSelected) {
-  if(isSelected) {
+  if (isSelected) {
     selectedNoteIds([...selectedNoteIds(), noteId]);
   } else {
-    selectedNoteIds(selectedNoteIds().filter(selectedNoteId => selectedNoteId !== noteId));
+    selectedNoteIds(
+      selectedNoteIds().filter((selectedNoteId) => selectedNoteId !== noteId)
+    );
   }
 }
 
@@ -46,6 +47,14 @@ const client = new ApolloClient({
             read: (currentIsSelectedValue, helpers) => {
               const currentNoteId = helpers.readField("id");
               return selectedNoteIds().includes(currentNoteId);
+            },
+          },
+          note: {
+            read: (existingCachedValue, helpers) => {
+              const queriedNoteId = helpers.args.id;
+              return {
+                __ref: `Note:${queriedNoteId}`,
+              };
             },
           },
         },
