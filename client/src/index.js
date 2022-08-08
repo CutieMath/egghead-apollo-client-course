@@ -52,9 +52,10 @@ const client = new ApolloClient({
           note: {
             read: (existingCachedValue, helpers) => {
               const queriedNoteId = helpers.args.id;
-              return {
-                __ref: `Note:${queriedNoteId}`,
-              };
+              return helpers.toReference({
+                id: queriedNoteId,
+                __typename: "Note",
+              });
             },
           },
         },
