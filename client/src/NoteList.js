@@ -5,7 +5,7 @@ import {
   UiNote,
   ViewNoteButton,
 } from "./shared-ui";
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useQuery, useMutation, useSubscription } from "@apollo/client";
 import { Link } from "react-router-dom";
 import { setNoteSelection } from ".";
 
@@ -80,6 +80,28 @@ export function NoteList({ category }) {
     }
   );
 
+  const { data: newNoteData } = useSubscription(
+    gql`
+      subscription newSharedNote($categoryId: String!) {
+        newSharedNote(categoryId: $categoryId) {
+          id
+          content
+          category {
+            id
+            label
+          }
+        }
+      }
+    `,
+    {
+      variables: {
+        categoryId: category,
+      },
+    }
+  );
+
+  const newNote = newNoteData?.newSharedNote;
+
   if (error && !data) {
     return <Heading>Could not load notes.</Heading>;
   }
@@ -87,14 +109,14 @@ export function NoteList({ category }) {
     return <Spinner />;
   }
 
-  const newNote = {
-    category: {
-      label: "Holiday planning",
-    },
-    content: "New note content..",
-  };
+  // const newNote = {
+  //   category: {
+  //     label: "Holiday planning",
+  //   },
+  //   content: "New note content..",
+  // };
 
-  const recentChanges = (
+  const recentChanges = newNote && (
     <>
       <Text>Recent changes: </Text>
       <UiNote category={newNote.category.label} content={newNote.content} />

@@ -10,8 +10,11 @@ import {
   HttpLink,
   from,
   makeVar,
+  split,
 } from "@apollo/client";
 import { RetryLink } from "@apollo/client/link/retry";
+import { WebSocketLink } from "@apollo/client/link/ws";
+import { getMainDefinition } from "@apollo/client/utilities";
 
 let selectedNoteIds = makeVar(["2"]);
 export function setNoteSelection(noteId, isSelected) {
@@ -27,7 +30,6 @@ export function setNoteSelection(noteId, isSelected) {
 const httpLink = new HttpLink({
   uri: "http://localhost:4000/graphql",
 });
-
 const retryLink = new RetryLink({
   // by default retry for 5 times
   delay: {
@@ -36,6 +38,17 @@ const retryLink = new RetryLink({
     jitter: false, // randomize the time between intervals => better to set true
   },
 });
+const wsLink = new WebSocketLink({
+  uri: "ws://localhost:4000/graphql",
+});
+const protocolLink = split(
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return definition.operation === "subscription";
+  } /* split based on operation type */,
+  wsLink,
+  httpLink
+);
 
 // point to the server
 const client = new ApolloClient({
@@ -76,7 +89,7 @@ const client = new ApolloClient({
   //     },
   //   },
   // }
-  link: from([retryLink, httpLink]),
+  link: from([retryLink, protocolLink]),
 });
 
 ReactDOM.render(
