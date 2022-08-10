@@ -1,4 +1,4 @@
-import { Spinner, Stack, Heading, Checkbox } from "@chakra-ui/react";
+import { Spinner, Stack, Heading, Checkbox, Text } from "@chakra-ui/react";
 import {
   DeleteButton,
   UiLoadMoreButton,
@@ -86,10 +86,26 @@ export function NoteList({ category }) {
   if (loading) {
     return <Spinner />;
   }
+
+  const newNote = {
+    category: {
+      label: "Holiday planning",
+    },
+    content: "New note content..",
+  };
+
+  const recentChanges = (
+    <>
+      <Text>Recent changes: </Text>
+      <UiNote category={newNote.category.label} content={newNote.content} />
+    </>
+  );
+
   const notes = data?.notes.filter((note) => !!note);
 
   return (
     <Stack spacing={4}>
+      {recentChanges}
       {notes?.map((note) => (
         <UiNote
           key={note.id}
