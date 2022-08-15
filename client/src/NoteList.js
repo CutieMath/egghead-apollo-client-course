@@ -103,10 +103,17 @@ export function NoteList({ category }) {
       },
       updateQuery: (previousQueryResult, { subscriptionData }) => {
         const newNote = subscriptionData.data.newSharedNote;
-        return {
-          ...previousQueryResult, // ensure __typeName is preserved
-          notes: [newNote, ...previousQueryResult.notes],
-        };
+        client.cache.writeQuery({
+          query: NOTES_QUERY,
+          data: {
+            ...previousQueryResult, // ensure __typeName is preserved
+            notes: [newNote, ...previousQueryResult.notes],
+          },
+          variables: {
+            categoryId: category,
+          },
+          overwrite: true,
+        });
       },
     });
     return unsubscribe;
