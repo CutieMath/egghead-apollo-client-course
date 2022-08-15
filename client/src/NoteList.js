@@ -8,6 +8,7 @@ import {
 import { gql, useQuery, useMutation, useSubscription } from "@apollo/client";
 import { Link } from "react-router-dom";
 import { setNoteSelection } from ".";
+import { useEffect } from "react";
 
 const NOTES_QUERY = gql`
   query GetAllNotes($categoryId: String, $offset: Int, $limit: Int) {
@@ -24,16 +25,19 @@ const NOTES_QUERY = gql`
 `;
 
 export function NoteList({ category }) {
-  const { data, loading, error, fetchMore } = useQuery(NOTES_QUERY, {
-    variables: {
-      categoryId: category,
-      offset: 0, // give notes from the beginning
-      limit: 3,
-    },
-    // use no cache policy for certain queries that are constantly changing
-    fetchPolicy: "cache-and-network",
-    errorPolicy: "all", // leave the data alone
-  }); // deconstruct the data from the result
+  const { data, loading, error, fetchMore, subscribeToMore } = useQuery(
+    NOTES_QUERY,
+    {
+      variables: {
+        categoryId: category,
+        offset: 0, // give notes from the beginning
+        limit: 3,
+      },
+      // use no cache policy for certain queries that are constantly changing
+      fetchPolicy: "cache-and-network",
+      errorPolicy: "all", // leave the data alone
+    }
+  ); // deconstruct the data from the result
 
   // Delete function
   const [deleteNote] = useMutation(
@@ -80,27 +84,54 @@ export function NoteList({ category }) {
     }
   );
 
-  const { data: newNoteData } = useSubscription(
-    gql`
-      subscription newSharedNote($categoryId: String!) {
-        newSharedNote(categoryId: $categoryId) {
-          id
-          content
-          category {
+  useEffect(() => {
+    const unsubscribe = subscribeToMore({
+      document: gql`
+        subscription newSharedNote($categoryId: String!) {
+          newSharedNote(categoryId: $categoryId) {
             id
-            label
+            content
+            category {
+              id
+              label
+            }
           }
         }
-      }
-    `,
-    {
+      `,
       variables: {
         categoryId: category,
       },
-    }
-  );
+      updateQuery: (previousQueryResult, { subscriptionData }) => {
+        const newNote = subscriptionData.data.newSharedNote;
+        return {
+          ...previousQueryResult, // ensure __typeName is preserved
+          notes: [newNote, ...previousQueryResult.notes],
+        };
+      },
+    });
+    return unsubscribe;
+  }, [category]);
 
-  const newNote = newNoteData?.newSharedNote;
+  // const { data: newNoteData } = useSubscription(
+  //   gql`
+  //     subscription newSharedNote($categoryId: String!) {
+  //       newSharedNote(categoryId: $categoryId) {
+  //         id
+  //         content
+  //         category {
+  //           id
+  //           label
+  //         }
+  //       }
+  //     }
+  //   `,
+  //   {
+  //     variables: {
+  //       categoryId: category,
+  //     },
+  //   }
+  // );
+  // const newNote = newNoteData?.newSharedNote;
 
   if (error && !data) {
     return <Heading>Could not load notes.</Heading>;
@@ -116,18 +147,19 @@ export function NoteList({ category }) {
   //   content: "New note content..",
   // };
 
-  const recentChanges = newNote && (
-    <>
-      <Text>Recent changes: </Text>
-      <UiNote category={newNote.category.label} content={newNote.content} />
-    </>
-  );
+  // To make the notes stack on top, we use a different method
+  // const recentChanges = newNote && (
+  //   <>
+  //     <Text>Recent changes: </Text>
+  //     <UiNote category={newNote.category.label} content={newNote.content} />
+  //   </>
+  // );
 
   const notes = data?.notes.filter((note) => !!note);
 
   return (
     <Stack spacing={4}>
-      {recentChanges}
+      {/* {recentChanges} */}
       {notes?.map((note) => (
         <UiNote
           key={note.id}
