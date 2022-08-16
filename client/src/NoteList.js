@@ -33,8 +33,6 @@ export function NoteList({ category }) {
         offset: 0, // give notes from the beginning
         limit: 3,
       },
-      // use no cache policy for certain queries that are constantly changing
-      fetchPolicy: "cache-and-network",
       errorPolicy: "all", // leave the data alone
     }
   ); // deconstruct the data from the result

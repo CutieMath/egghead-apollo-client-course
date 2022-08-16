@@ -53,6 +53,12 @@ const protocolLink = split(
 
 // point to the server
 const client = new ApolloClient({
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: "cache-and-network",
+      nextFetchPolicy: "cache-first", // Future query
+    },
+  },
   cache: new InMemoryCache({
     typePolicies: {
       Note: {
