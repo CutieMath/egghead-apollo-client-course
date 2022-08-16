@@ -15,6 +15,7 @@ import {
 import { RetryLink } from "@apollo/client/link/retry";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { persistCache, LocalStorageWrapper } from "apollo3-cache-persist";
 
 let selectedNoteIds = makeVar(["2"]);
 export function setNoteSelection(noteId, isSelected) {
@@ -92,15 +93,20 @@ const client = new ApolloClient({
   link: from([retryLink, protocolLink]),
 });
 
-ReactDOM.render(
-  <React.StrictMode>
-    <ChakraProvider>
-      <ApolloProvider client={client}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ApolloProvider>
-    </ChakraProvider>
-  </React.StrictMode>,
-  document.getElementById("root")
-);
+persistCache({
+  cache: client.cache,
+  storage: new LocalStorageWrapper(window.localStorage),
+}).then(() => {
+  ReactDOM.render(
+    <React.StrictMode>
+      <ChakraProvider>
+        <ApolloProvider client={client}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </ApolloProvider>
+      </ChakraProvider>
+    </React.StrictMode>,
+    document.getElementById("root")
+  );
+});

@@ -6,5 +6,9 @@
     "start": "npm --prefix=client start & npm --prefix=server start"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "apollo3-cache-persist": "^0.14.1",
+    "graphql-anywhere": "^4.2.7"
+  }
 }
